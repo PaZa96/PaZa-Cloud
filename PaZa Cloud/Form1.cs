@@ -5,6 +5,8 @@ using Dropbox.Api;
 using Dropbox.Api.Users;
 using Dropbox.Api.Files;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 
 namespace PaZa_Cloud
 {
@@ -12,12 +14,13 @@ namespace PaZa_Cloud
     {
         static string token = "8FP_ykdhlGAAAAAAAAAATkk6ay4PQvMhxnE5RiEI2zmnVnGI0a8ZTBa18N0LOxLW";
         static DropboxClient client = new DropboxClient(token);
+        private string CurrentPath = "";
 
-        public  Form1()
+        public Form1()
         {
             getFullInfo();
             getSpaceUsage();
-            getNode();
+            getFile(string.Empty);
             InitializeComponent();
         }
 
@@ -43,63 +46,32 @@ namespace PaZa_Cloud
             }
         }
 
-        public string[] getNodeName(string path, int pos)
+        private async void getFile(string file)
         {
-            string[] res = new string[2];
-            int spos = path.LastIndexOf("/");
-            res[1] = path.Substring(spos + 1, path.Length - spos - 1);
-            path = path.Remove(spos, path.Length - spos);
-            spos = path.LastIndexOf("/") + 1;
-            res[0] = path.Substring(spos, path.Length - spos);
-            return res;
-        }
+            var list = await client.Files.ListFolderAsync(file);
 
-        public async void getNode()
-        {
-            ListFolderResult list = await client.Files.ListFolderAsync(new ListFolderArg(string.Empty, true));
             if (list != null)
             {
-                TreeNode[] root = treeView1.Nodes.Find("root", false);
-                root[0].Nodes.Clear();
+                
+                listBox1.Items.Clear();
+                CurrentPath = (file);
+                if (CurrentPath != "")
+                {
+                    listBox1.Items.Add("..");
+                    
+                }
                 foreach (var item in list.Entries.Where(i => i.IsFolder))
                 {
-                    int pos = item.PathDisplay.LastIndexOf("/");
-                    if (pos == 0)
-                    {
-                        treeView1.BeginUpdate();
-                        root[0].Nodes.Add(item.Name, item.Name);
-                        treeView1.EndUpdate();
-                    }
-                    else
-                    {
-                        string[] names = getNodeName(item.PathDisplay, pos);
-                        TreeNode[] node = root[0].Nodes.Find(names[0], true);
-                        treeView1.BeginUpdate();
-                        node[0].Nodes.Add(names[1], names[1]);
-                        treeView1.EndUpdate();
-                    }
+                    listBox1.Items.Add(item.Name);
                 }
 
                 foreach (var item in list.Entries.Where(i => i.IsFile))
                 {
-                    int pos = item.PathDisplay.LastIndexOf("/");
-                    if (pos == 0)
-                    {
-                        treeView1.BeginUpdate();
-                        root[0].Nodes.Add(item.Name, item.Name);
-                        treeView1.EndUpdate();
-                    }
-                    else
-                    {
-                        string[] names = getNodeName(item.PathDisplay, pos);
-                        TreeNode[] node = root[0].Nodes.Find(names[0], true);
-                        treeView1.BeginUpdate();
-                        node[0].Nodes.Add(names[1], names[1]);
-                        treeView1.EndUpdate();
-                    }
-                    treeView1.ExpandAll();
+                    listBox1.Items.Add(item.Name);
                 }
+                
             }
+            
         }
 
         private void Download()
@@ -107,5 +79,51 @@ namespace PaZa_Cloud
 
         }
 
+        private void Upload()
+        {
+
+        }
+
+        private async void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string myStream;
+            string filePath;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((myStream = openFileDialog1.FileName) != null)
+                {
+
+                    //  MemoryStream ms = await client.Files.UploadAsync(myStream, WriteMode.Overwrite.Instance, );
+                }
+
+            }
+        }
+
+        private async void listBox1_DoubleClick(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem == null) { return; }
+
+            string file = Convert.ToString(listBox1.SelectedItem);
+
+            if(file == "..")
+            {
+                // this.CurrentPath = (this.CurrentPath).Replace("//", "/");
+                this.CurrentPath = Path.GetDirectoryName(this.CurrentPath).Replace("\\","/");
+                if (this.CurrentPath == "/") { this.CurrentPath = ""; }
+                getFile(CurrentPath);
+            }
+            else
+            {
+                
+                if ()
+                getFile(CurrentPath + "/" + file);
+            }
+          
+        }
+
+        private void создатьПапкуToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
