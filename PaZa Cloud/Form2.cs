@@ -32,7 +32,7 @@ namespace PaZa_Cloud
         private async void button1_Click(object sender, EventArgs e)
         {
             FolderMetadata metadata = await client.Files.CreateFolderAsync(new CreateFolderArg(currentPath + "/" + textBox1.Text));
-            this.Visible = false;
+            Close();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

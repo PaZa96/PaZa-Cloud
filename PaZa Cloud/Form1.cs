@@ -18,8 +18,12 @@ namespace PaZa_Cloud
         static DropboxClient client = new DropboxClient(token);
         private string CurrentPath = "";
         private FileStream DownloadFileStream = null;
-        private BinaryWriter DownloadWriter = null;
         private long UploadingFileLength = 0;
+        private ContextMenu cntxMenu = new ContextMenu();
+        private MenuItem menuItem1 = new MenuItem("Открыть");
+        private MenuItem menuItem2 = new MenuItem("Удалить");
+        private MenuItem menuItem3 = new MenuItem("Расшарить");
+        private MenuItem menuItem4 = new MenuItem("Информация");
 
         public Form1()
         {
@@ -27,7 +31,7 @@ namespace PaZa_Cloud
             getFullInfo();
             getSpaceUsage();
             getFile(string.Empty);
-            
+
         }
 
         private async void getFullInfo()
@@ -59,13 +63,13 @@ namespace PaZa_Cloud
 
             if (list != null)
             {
-                
+
                 listBox1.Items.Clear();
                 CurrentPath = (file);
                 if (CurrentPath != "")
                 {
                     listBox1.Items.Add("..");
-                    
+
                 }
                 foreach (var item in list.Entries.Where(i => i.IsFolder))
                 {
@@ -76,9 +80,9 @@ namespace PaZa_Cloud
                 {
                     listBox1.Items.Add(item.Name);
                 }
-                
+
             }
-            
+
         }
 
         private async void Download(string path)
@@ -96,7 +100,7 @@ namespace PaZa_Cloud
         {
             if (this.openFileDialog1.ShowDialog() != System.Windows.Forms.DialogResult.OK) { return; }
 
-    
+
             var fs = new FileStream(this.openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
             // get file length for progressbar
@@ -107,16 +111,14 @@ namespace PaZa_Cloud
         private async void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string myStream;
-            string filePath;
 
-           
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 if ((myStream = openFileDialog1.FileName) != null)
                 {
                     var mem = new FileStream(this.openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     var uploadFileEntry = await client.Files.UploadAsync(CurrentPath, WriteMode.Overwrite.Instance, body: mem);
-                 
+
                 }
 
             }
@@ -126,12 +128,11 @@ namespace PaZa_Cloud
         {
             if (listBox1.SelectedItem == null) { return; }
 
-            string file = Convert.ToString(listBox1.SelectedItem);            
+            string file = Convert.ToString(listBox1.SelectedItem);
 
             if (file == "..")
             {
-                // this.CurrentPath = (this.CurrentPath).Replace("//", "/");
-                this.CurrentPath = Path.GetDirectoryName(this.CurrentPath).Replace("\\","/");
+                this.CurrentPath = Path.GetDirectoryName(this.CurrentPath).Replace("\\", "/");
                 if (this.CurrentPath == "/") { this.CurrentPath = ""; }
                 getFile(CurrentPath);
             }
@@ -151,7 +152,7 @@ namespace PaZa_Cloud
                     }
 
                     Download(CurrentPath + "/" + file);
-                }        
+                }
             }
         }
 
@@ -160,7 +161,8 @@ namespace PaZa_Cloud
             Metadata data = await client.Files.DeleteAsync(path);
             if (data != null)
             {
-                MessageBox.Show("Удаление", "Файл удалён", MessageBoxButtons.OK);
+                MessageBox.Show("Удаление выполнено успешно", "Удаление", MessageBoxButtons.OK);
+                getFile(CurrentPath);
             }
         }
 
@@ -176,10 +178,118 @@ namespace PaZa_Cloud
 
         private void listBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            string item = Convert.ToString(listBox1.SelectedItem);
+            if (item != "")
             {
-               
+                if (e.Button == MouseButtons.Right)
+                {
+                    listBox1.ContextMenu = cntxMenu;
+                    if (client.Files.GetMetadataAsync(CurrentPath + "/" + item).Result.IsFolder)
+                    {
+                        menuItem1.Text = "Открыть";
+                    }
+                    else
+                    {
+                        menuItem1.Text = "Скачать";
+                    }
+                }
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cntxMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { menuItem1, menuItem2, menuItem3, menuItem4 });
+            menuItem1.Click += openMenuItem_Click;
+            menuItem2.Click += dropMenuItem_Click;
+            menuItem3.Click += sharedMenuItem_Click;
+        }
+
+        private void openMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+
+            if (item != "")
+            {
+                if (item == "..")
+                {
+                    this.CurrentPath = Path.GetDirectoryName(this.CurrentPath).Replace("\\", "/");
+                    if (this.CurrentPath == "/") { this.CurrentPath = ""; }
+                    getFile(CurrentPath);
+                }
+                else
+                {
+                    if (client.Files.GetMetadataAsync(CurrentPath + "/" + item).Result.IsFolder)
+                    {
+                        getFile(CurrentPath + "/" + item);
+                    }
+                    else
+                    {
+                        this.saveFileDialog1.FileName = Path.GetFileName(CurrentPath + "/" + item);
+
+                        if (this.saveFileDialog1.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                        {
+                            return;
+                        }
+
+                        Download(CurrentPath + "/" + item);
+                    }
+                }
+            }
+        }
+
+        private async void search(string path)
+        {
+            var list = await client.Files.SearchAsync(CurrentPath, path, 0, 100, null);
+
+            if (list != null)
+            {
+
+                listBox1.Items.Clear();
+
+                foreach (var item in list.Matches.Where(i => i.Metadata.IsFolder))
+                {
+                    listBox1.Items.Add(item.Metadata.Name);
+                }
+
+                foreach (var item in list.Matches.Where(i => i.Metadata.IsFile))
+                {
+                    listBox1.Items.Add(item.Metadata.Name);
+                }
+            }
+        }
+
+        private void dropMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+            Delete(CurrentPath + "/" + item);
+
+        }
+
+        private async void sharedMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+            
+            var sharedMetadeta = await client.Sharing.CreateSharedLinkWithSettingsAsync(CurrentPath + "/" + item);
+            Form3 fr3 = new Form3(sharedMetadeta.Url);
+            fr3.ShowDialog();
+        }
+
+        private void ссылкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form4 fr4 = new Form4();
+            fr4.ShowDialog();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            search(textBox1.Text);
+        }
+
+        private void обновитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            getFile(CurrentPath);
         }
     }
 }
+    
+
