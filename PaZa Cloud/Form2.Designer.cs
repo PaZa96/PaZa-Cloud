@@ -34,14 +34,16 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 21);
+            this.textBox1.Location = new System.Drawing.Point(12, 12);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(159, 20);
             this.textBox1.TabIndex = 0;
+            this.textBox1.Text = "Имя папки";
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(193, 19);
+            this.button1.Location = new System.Drawing.Point(177, 10);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(108, 23);
             this.button1.TabIndex = 1;
@@ -53,9 +55,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(313, 59);
+            this.ClientSize = new System.Drawing.Size(296, 41);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
+            this.Location = new System.Drawing.Point(300, 300);
             this.Name = "Form2";
             this.Text = "Form2";
             this.ResumeLayout(false);
