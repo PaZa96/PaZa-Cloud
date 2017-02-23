@@ -25,6 +25,7 @@ namespace PaZa_Cloud
         private MenuItem menuItem3 = new MenuItem("Расшарить");
         private MenuItem menuItem4 = new MenuItem("Информация");
         private MenuItem menuItem5 = new MenuItem("Переместить");
+        private MenuItem menuItem6 = new MenuItem("Копировать");
 
         public Form1()
         {
@@ -95,18 +96,6 @@ namespace PaZa_Cloud
             this.DownloadFileStream = new FileStream(this.saveFileDialog1.FileName, FileMode.Create, FileAccess.Write);
             this.progressBar1.Value = 100;
             this.DownloadFileStream.Close();
-        }
-
-        private async void Upload(string path)
-        {
-            if (this.openFileDialog1.ShowDialog() != System.Windows.Forms.DialogResult.OK) { return; }
-
-
-            var fs = new FileStream(this.openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-            // get file length for progressbar
-            this.UploadingFileLength = fs.Length;
-            this.progressBar1.Value = 0;
         }
 
         private async void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -202,12 +191,13 @@ namespace PaZa_Cloud
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cntxMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { menuItem1, menuItem2, menuItem3, menuItem4, menuItem5});
+            cntxMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6});
             menuItem1.Click += openMenuItem_Click;
             menuItem2.Click += dropMenuItem_Click;
             menuItem3.Click += sharedMenuItem_Click;
             menuItem4.Click += информацияMenuItem_Click;
             menuItem5.Click += перемMenuItem_Click;
+            menuItem6.Click += копированиеMenuItem_Click;
         }
 
         private void openMenuItem_Click(object sender, EventArgs e)
@@ -247,6 +237,15 @@ namespace PaZa_Cloud
             string item = Convert.ToString(listBox1.SelectedItem);
             Form5 fr5 = new Form5(CurrentPath + "/" + item, item);
             fr5.ShowDialog();
+            getFile(CurrentPath);
+        }
+
+
+        private void копированиеMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+            Form6 fr6 = new Form6(CurrentPath + "/" + item, item);
+            fr6.ShowDialog();
             getFile(CurrentPath);
         }
 

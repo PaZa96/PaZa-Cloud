@@ -33,6 +33,8 @@
             this.создатьПапкуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.загрузитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.ссылкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.обновитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -42,10 +44,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.ссылкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.обновитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,6 +60,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.создатьПапкуToolStripMenuItem,
             this.загрузитьToolStripMenuItem,
@@ -90,6 +91,20 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(12, 20);
+            // 
+            // ссылкиToolStripMenuItem
+            // 
+            this.ссылкиToolStripMenuItem.Name = "ссылкиToolStripMenuItem";
+            this.ссылкиToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.ссылкиToolStripMenuItem.Text = "Ссылки";
+            this.ссылкиToolStripMenuItem.Click += new System.EventHandler(this.ссылкиToolStripMenuItem_Click);
+            // 
+            // обновитьToolStripMenuItem
+            // 
+            this.обновитьToolStripMenuItem.Name = "обновитьToolStripMenuItem";
+            this.обновитьToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.обновитьToolStripMenuItem.Text = "Обновить";
+            this.обновитьToolStripMenuItem.Click += new System.EventHandler(this.обновитьToolStripMenuItem_Click);
             // 
             // label2
             // 
@@ -152,13 +167,6 @@
             this.progressBar1.Size = new System.Drawing.Size(209, 23);
             this.progressBar1.TabIndex = 9;
             // 
-            // ссылкиToolStripMenuItem
-            // 
-            this.ссылкиToolStripMenuItem.Name = "ссылкиToolStripMenuItem";
-            this.ссылкиToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
-            this.ссылкиToolStripMenuItem.Text = "Ссылки";
-            this.ссылкиToolStripMenuItem.Click += new System.EventHandler(this.ссылкиToolStripMenuItem_Click);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(600, -1);
@@ -176,17 +184,11 @@
             this.textBox1.Size = new System.Drawing.Size(100, 20);
             this.textBox1.TabIndex = 11;
             // 
-            // обновитьToolStripMenuItem
-            // 
-            this.обновитьToolStripMenuItem.Name = "обновитьToolStripMenuItem";
-            this.обновитьToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
-            this.обновитьToolStripMenuItem.Text = "Обновить";
-            this.обновитьToolStripMenuItem.Click += new System.EventHandler(this.обновитьToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.ClientSize = new System.Drawing.Size(687, 311);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
