@@ -117,12 +117,15 @@ namespace PaZa_Cloud
             {
                 if ((myStream = openFileDialog1.FileName) != null)
                 {
+                    this.progressBar1.Value = 0;
                     var mem = new FileStream(this.openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    var uploadFileEntry = await client.Files.UploadAsync(CurrentPath, WriteMode.Overwrite.Instance, body: mem);
-
+                    int nameIndex = mem.Name.LastIndexOf("\\");
+                    string filename = mem.Name.Substring(nameIndex+1);
+                    var uploadFileEntry = await client.Files.UploadAsync(CurrentPath + "/" + filename, WriteMode.Overwrite.Instance, body: mem);
+                    this.progressBar1.Value = 100;
                 }
-
             }
+            getFile(CurrentPath);
         }
 
         private async void listBox1_DoubleClick(object sender, EventArgs e)
@@ -233,7 +236,6 @@ namespace PaZa_Cloud
                         {
                             return;
                         }
-
                         Download(CurrentPath + "/" + item);
                     }
                 }
@@ -245,6 +247,7 @@ namespace PaZa_Cloud
             string item = Convert.ToString(listBox1.SelectedItem);
             Form5 fr5 = new Form5(CurrentPath + "/" + item, item);
             fr5.ShowDialog();
+            getFile(CurrentPath);
         }
 
         private async void search(string path)
@@ -280,7 +283,6 @@ namespace PaZa_Cloud
             {
                 MessageBox.Show("Имя: " + info.Name + "\n" + "Id: " + info.AsFile.Id + "\n" + "Размер: " + info.AsFile.Size + "\n" + "Последнее изменение: " + info.AsFile.ClientModified, "Удаление", MessageBoxButtons.OK);
             }
-           
         }
 
        
