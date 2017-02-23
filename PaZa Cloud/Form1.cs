@@ -24,6 +24,7 @@ namespace PaZa_Cloud
         private MenuItem menuItem2 = new MenuItem("Удалить");
         private MenuItem menuItem3 = new MenuItem("Расшарить");
         private MenuItem menuItem4 = new MenuItem("Информация");
+        private MenuItem menuItem5 = new MenuItem("Переместить");
 
         public Form1()
         {
@@ -198,10 +199,12 @@ namespace PaZa_Cloud
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cntxMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { menuItem1, menuItem2, menuItem3, menuItem4 });
+            cntxMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { menuItem1, menuItem2, menuItem3, menuItem4, menuItem5});
             menuItem1.Click += openMenuItem_Click;
             menuItem2.Click += dropMenuItem_Click;
             menuItem3.Click += sharedMenuItem_Click;
+            menuItem4.Click += информацияMenuItem_Click;
+            menuItem5.Click += перемMenuItem_Click;
         }
 
         private void openMenuItem_Click(object sender, EventArgs e)
@@ -237,6 +240,13 @@ namespace PaZa_Cloud
             }
         }
 
+        private void перемMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+            Form5 fr5 = new Form5(CurrentPath + "/" + item, item);
+            fr5.ShowDialog();
+        }
+
         private async void search(string path)
         {
             var list = await client.Files.SearchAsync(CurrentPath, path, 0, 100, null);
@@ -258,6 +268,22 @@ namespace PaZa_Cloud
             }
         }
 
+        private async void getInfo(string path)
+        {
+            var info = await client.Files.GetMetadataAsync(path);
+
+            if (info.IsFolder)
+            {
+                MessageBox.Show("Имя: " + info.Name + "\n" + "Id: " + info.AsFolder.Id + "\n", "Удаление", MessageBoxButtons.OK);
+            }
+            else
+            {
+                MessageBox.Show("Имя: " + info.Name + "\n" + "Id: " + info.AsFile.Id + "\n" + "Размер: " + info.AsFile.Size + "\n" + "Последнее изменение: " + info.AsFile.ClientModified, "Удаление", MessageBoxButtons.OK);
+            }
+           
+        }
+
+       
         private void dropMenuItem_Click(object sender, EventArgs e)
         {
             string item = Convert.ToString(listBox1.SelectedItem);
@@ -272,6 +298,12 @@ namespace PaZa_Cloud
             var sharedMetadeta = await client.Sharing.CreateSharedLinkWithSettingsAsync(CurrentPath + "/" + item);
             Form3 fr3 = new Form3(sharedMetadeta.Url);
             fr3.ShowDialog();
+        }
+
+        private async void информацияMenuItem_Click(object sender, EventArgs e)
+        {
+            string item = Convert.ToString(listBox1.SelectedItem);
+            getInfo(CurrentPath + "/" + item);
         }
 
         private void ссылкиToolStripMenuItem_Click(object sender, EventArgs e)
